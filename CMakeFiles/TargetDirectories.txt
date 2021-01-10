@@ -1,0 +1,7 @@
+/.home/student1/gorlali/tetrisstate-gorlaligit/CMakeFiles/test.dir
+/.home/student1/gorlali/tetrisstate-gorlaligit/CMakeFiles/edit_cache.dir
+/.home/student1/gorlali/tetrisstate-gorlaligit/CMakeFiles/rebuild_cache.dir
+/.home/student1/gorlali/tetrisstate-gorlaligit/src/CMakeFiles/test.dir
+/.home/student1/gorlali/tetrisstate-gorlaligit/src/CMakeFiles/rebuild_cache.dir
+/.home/student1/gorlali/tetrisstate-gorlaligit/src/CMakeFiles/edit_cache.dir
+/.home/student1/gorlali/tetrisstate-gorlaligit/src/CMakeFiles/main.dir

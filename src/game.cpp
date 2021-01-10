@@ -1,27 +1,53 @@
 #include "game.h"
+#include "playstate.h"
+#include <array>
+#include <iostream>
 
-Game::Game() : mWindow(sf::VideoMode(800,800), "Tetris")
+Game::Game() : mWindow(sf::VideoMode(800,800), "Tetris"), mGameSpeed(3.0f),
+               mGameScore(0)
 {
-    // Vaš kod dolazi ovdje (ako bude potrebe).   
+    // Inicijalizacija stanja dolazi ovdje
+    mAllStates[0]=new WelcomeState(this);
+    mAllStates[1]=new PlayState(this);
+    mAllStates[2]=new SpeedState(this);
+    setState(GameState::Welcome);
+}
+
+Game::~Game()
+{
+   // Eventualna dealokacija  
 }
 
 void Game::run(){
-    mBoard.spawnPiece();
-    float vrime=0.3;
+    
     sf::Clock clock;
     sf::Time  protekloVrijeme = sf::Time::Zero;
-    sf::Time dt = sf::seconds(0.5);
     while(mWindow.isOpen()){
         processEvents();
+        sf::Time dt = sf::seconds(1.0/mGameSpeed);
         protekloVrijeme+=clock.restart();
-        if(protekloVrijeme>=dt)
+        if(mpGameState == mAllStates[GameState::State::Playing])
         {
-            update();
-            protekloVrijeme=sf::Time::Zero;
+            if(protekloVrijeme>=dt)
+            {
+                update();
+                protekloVrijeme=sf::Time::Zero;
+            }
         }
+        else update();
         render();
-        dt=sf::seconds(0.5-mScore.getLevel()*0.1f);
     }
+}
+
+void Game::setState(GameState::State st)
+{
+    mpGameState = mAllStates[st];
+    mpGameState->start();
+}
+
+sf::RenderWindow * Game::getWindow()
+{
+    return &mWindow;
 }
 
 void Game::processEvents()
@@ -29,63 +55,27 @@ void Game::processEvents()
     sf::Event event;
     while(mWindow.pollEvent(event))
     {
-        switch(event.type)
-        {
-        case sf::Event::Closed:
+        if(event.type == sf::Event::Closed)
             mWindow.close();
-            break;
-
-        case sf::Event::KeyPressed:
-            // Vaš kod dolazi ovdje !!!  
-            if(event.key.code==sf::Keyboard::Left)
-                mBoard.update(-20,0); 
-            if(event.key.code==sf::Keyboard::Right)
-                mBoard.update(20,0);
-            if(event.key.code==sf::Keyboard::R || event.key.code==sf::Keyboard::Up)
-                mBoard.update(0,0);
-            if(event.key.code==sf::Keyboard::Down)
-                {
-                    mBoard.update(0,20);
-                    mScore.addNoLinesCompleted(mBoard.getNoLinesCompleted());
-                    mScore.update();
-                } 
-            if(event.key.code==sf::Keyboard::Space)
-            {
-                mBoard.spaceDown();
-                mScore.addNoLinesCompleted(mBoard.getNoLinesCompleted());
-                mScore.update();
-            }
-	    break;
-        case sf::Event::Resized:
+        else if(event.type ==sf::Event::Resized){
             // Spriječi deformaciju objekata prilikom promjene veličine prozora
             sf::FloatRect viewRect(0, 0, event.size.width, event.size.height);
             mWindow.setView(sf::View(viewRect));
-            break;
         }
+        else {
+            mpGameState->handleEvents(event);
+		}
     }
 }
 
 void Game::update()
 {
-   // Updatiranje scene. Vaš kod dolazi ovdje
-   if(mBoard.isGameOver())
-   {
-       mScore.setGameOver();
-   }
-   else{
-        mBoard.update(0,20);
-        mScore.addNoLinesCompleted(mBoard.getNoLinesCompleted());
-        mScore.update();
-   }
+    mpGameState->update();
 }
 
 void Game::render()
 {
      mWindow.clear();
-
-
-     mWindow.draw(mBoard);
-     mWindow.draw(mScore);
-
+     mpGameState->render();
      mWindow.display();
 }

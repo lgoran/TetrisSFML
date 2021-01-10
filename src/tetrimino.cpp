@@ -1,6 +1,5 @@
 #include "tetrimino.h"
 
-// Boje komada. Svaki komad ima svoju boju.
 const sf::Color Tetrimino::mColors[SIZE]= {
   sf::Color::Blue,
   sf::Color::Red,
@@ -11,18 +10,6 @@ const sf::Color Tetrimino::mColors[SIZE]= {
   sf::Color(195,132,58)
 };
 
-// LOgički prikaz svih komada i svih njihovih rotacija. 
-void Tetrimino::move(int x,int y)
-{
-    mXposition+=x;
-    mYposition+=y;
-}
-void Tetrimino::rotate()
-{
-    mRotacija++;
-    if(mRotacija%4==0)
-        mRotacija=0;
-}
 const int Tetrimino::mDijelovi[SIZE][N_ROTACIJA][MAT_SIZE][MAT_SIZE] = {
     { // O
         {

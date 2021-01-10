@@ -1,25 +1,19 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+// Doraditi klasu ako je potrebno.
+
 class Score : public sf::Drawable, public sf::Transformable{
 public:
     Score();
-    // Dodaj broj obrisanih linija i aktualiziraj rezultat.
     void addNoLinesCompleted(int n);
-    // Postavi Game over string 
-    void setGameOver();
-    // Aktualizacija ispisa
     void update();
-    int getLevel();
+    int  getScore() const { return mScore; }
+    int mScore = 0;
 private:
     sf::Font mFont;
     sf::Text mScoreText;
-    sf::Text mLevelText;
-    sf::Text mGameOverText;
-    int mScore = 0;
-    int mLevel = 1;
-    // Eventualne dodatne varijable dolaze ovdje
+    int mTotalLinesCompleted = 0;    
 
-    // Iscrtavanje.
     void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
 };

@@ -1,35 +1,36 @@
 #ifndef BOARD_H
 #define BOARD_H
-
 #include <SFML/Graphics.hpp>
 #include "tetrimino.h"
 #include <random>
 
-/** Klasa Board
+/** Klasa Board -- Ubaciti vlastiti verziju ako postoje izmjene u odnosu na predloženi 
+ *                 izgled klase !!!!!!!
  *
  *  Klasa implementira svu logiku Tetris igre.
  */
 class Board : public sf::Drawable, public sf::Transformable, public sf::NonCopyable {
 public:
     Board();
-    // Aktualizacija
-    void update(int x,int y/* potrebne varijable */);
+    ~Board();
+    void update(int x,int y);
     // Pozicioniraj novi tetrimino na ploči.
     void spawnPiece();
-    // Vraća true ako je igra gotova, inače false
-    bool isGameOver() const;
-    // Broj obrisanih linija od zadnje aktualizacije scene.
-    int getNoLinesCompleted() const;
+    bool isGameOver() const { return mGameOver; }
+    void clearState();
+    int  getNoLinesCompleted() const ;
     void clearNoLinesCompleted() { mNoLinesCompleted = 0; }
+	// Nove metode za konverziju brzine u mDt.
+    void  setSpeed(float speed) { mDt = 1.0f/speed;}
+    float getSpeed() const { return 1.0f/mDt; }
     void spaceDown();
 private:
-    int gotovo=0;
     static const int EMPTY = -1;
-    static const int mCols = 10;       // Broj stupaca u mreži
-    static const int mRows = 2* mCols; // Broj redaka u mreži
+    static const int mCols = 10;
+    static const int mRows = 2* mCols;
 
-    sf::VertexArray mGrid;             // Linije koje čine mrežu.  
-    int mGridContent[mRows][mCols];    // Logički prikaz mreže
+    sf::VertexArray mGrid;
+	int mGridContent[mRows][mCols]; // Logički prikaz mreže
 
     // Dimenzije mreže
     float mLeftMargin = 100.f;
@@ -40,11 +41,9 @@ private:
     float mOriginX, mOriginY;
     // Dimenzije ćelija
     float mDx, mDy;
-    // Vremenski interval između propadanja tetrimina.
     float mDt = 0.3f; // sekunde
-    // Signalizacija da je igra završena
     bool mGameOver = false;
-    // Broj linija obrisanih od jednom (0,1,2,3 ili 4)
+    // Broj linija obrisanih od jedom (0,1,2,3 ili 4)
     int mNoLinesCompleted = 0;
 
     // Generiranje slučajnog elementa.
@@ -52,12 +51,10 @@ private:
     std::default_random_engine mRNE;
     std::uniform_int_distribution<> mUniformDist;
 
-    // Komad koji pada
     Tetrimino mPiece;
-    int tip_tetrimina;
-    // Iscrtavanje
-    void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
 
+    virtual void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
+    
     // Provjerava da li se komad može smjestiti na ploču.
     bool checkSpace();
     // Smjesti komad na ploču. Pretpostavlja se da je checkSpace(piece) vratio true.
@@ -72,8 +69,8 @@ private:
     bool isLineFull(int y) const;
     // Obriši kompletne linije i vrati broj obrisanih linija
     int clearLines();
-    // Eventualno vaše dodatne metode dolaze ovdje.
-    // Privatne metode koje ne trebate možete slobodno ukloniti.
+    // Obriši liniju y i translatiraj sve linije iznad nje prema dolje.
+    void deleteLine(int y);
 
 };
 

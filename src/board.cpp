@@ -1,8 +1,9 @@
 #include "board.h"
-#include <iostream>
+#include <time.h>
 // Vaš kod dolazi ovdje
 Board::Board(): mGrid(sf::Lines),mUniformDist(0,100),mOriginX(100),mOriginY(100),mDx(20),mDy(20)
 {
+    srand(time(NULL));
     for (int i = 0; i < 20; i++)
     {
         for (int j = 0; j < 10; j++)
@@ -27,6 +28,9 @@ Board::Board(): mGrid(sf::Lines),mUniformDist(0,100),mOriginX(100),mOriginY(100)
             i=i+2;
         }
 }
+Board::~Board(){
+
+}
 bool Board::checkSpace()
 {
     int pozx=(mPiece.mXposition-100)/20;
@@ -44,7 +48,7 @@ bool Board::checkSpace()
 void Board::spawnPiece()
 {
     mPiece.mRotacija = mUniformDist(mRNE)%4;
-    tip_tetrimina=mUniformDist(mRNE)%7;
+    int tip_tetrimina=mUniformDist(mRNE)%7;
     if(tip_tetrimina==0) mPiece.mType=Tetrimino::Types(0);
     if(tip_tetrimina==1) mPiece.mType=Tetrimino::Types(1);
     if(tip_tetrimina==2) mPiece.mType=Tetrimino::Types(2);
@@ -58,13 +62,13 @@ void Board::spawnPiece()
         {
             if(mGridContent[i][j]!=-1)
             {
-                gotovo=1;
+                mGameOver=true;
                 break;
             }
             if(mPiece.mDijelovi[mPiece.mType][mPiece.mRotacija][i][j-3]!=0)
                 mGridContent[i][j]=tip_tetrimina;
         }
-        if(gotovo==1)
+        if(mGameOver==true)
         break;
     }
     mPiece.mXposition=160;
@@ -309,11 +313,7 @@ int Board::getNoLinesCompleted() const
         }
     return br;
 }
-bool Board::isGameOver() const
-{
-    if(gotovo==1) return true;
-    return false;
-}
+
 void Board::draw(sf::RenderTarget &target, sf::RenderStates states ) const
 {
     states.transform *= getTransform();
@@ -332,4 +332,15 @@ void Board::draw(sf::RenderTarget &target, sf::RenderStates states ) const
             }
         }        
     }
+}
+void Board::clearState()
+{
+    for (int i = 0; i < 20; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            mGridContent[i][j]=-1;
+        }
+    }
+    mGameOver=false;
 }
